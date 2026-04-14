@@ -1,0 +1,177 @@
+/* Big Brother: dystopian black/red theme */
+:root {
+  color-scheme: dark;
+
+  --bb-bg-0: #050506;
+  --bb-bg-1: #0b0b0e;
+  --bb-surface: rgba(14, 14, 18, 0.78);
+  --bb-surface-2: rgba(20, 20, 26, 0.92);
+  --bb-text: #f3f3f5;
+  --bb-muted: #a7a7b3;
+
+  --bb-red: #ff2a2a;
+  --bb-red-2: #b10f1a;
+  --bb-border: rgba(255, 42, 42, 0.35);
+  --bb-border-2: rgba(255, 255, 255, 0.08);
+
+  --bb-shadow: 0 18px 55px rgba(0, 0, 0, 0.62);
+  --bb-radius: 16px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family:
+    "IBM Plex Mono",
+    "JetBrains Mono",
+    "Fira Code",
+    Consolas,
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    "Liberation Mono",
+    "Courier New",
+    monospace;
+  color: var(--bb-text);
+  background: radial-gradient(900px 500px at 18% 12%, rgba(255, 42, 42, 0.12), transparent 62%),
+    radial-gradient(1000px 700px at 82% 84%, rgba(255, 42, 42, 0.08), transparent 60%),
+    linear-gradient(180deg, var(--bb-bg-1), var(--bb-bg-0));
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+/* subtle “surveillance scanline” texture */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 2px,
+      transparent 6px
+    ),
+    radial-gradient(circle at 50% 0%, rgba(255, 42, 42, 0.11), transparent 40%);
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+}
+
+.login-container {
+  width: min(440px, 100%);
+  padding: 26px 22px;
+  border-radius: var(--bb-radius);
+  background: linear-gradient(180deg, var(--bb-surface), var(--bb-surface-2));
+  border: 1px solid var(--bb-border-2);
+  box-shadow: var(--bb-shadow);
+  position: relative;
+  isolation: isolate;
+}
+
+.login-container::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(450px 140px at 20% 0%, rgba(255, 42, 42, 0.28), transparent 60%);
+  mask: linear-gradient(#000, transparent 68%);
+  opacity: 0.9;
+  z-index: -1;
+}
+
+.login-container h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bb-text);
+}
+
+.login-container h2::before {
+  content: "◼ ";
+  color: var(--bb-red);
+  text-shadow: 0 0 18px rgba(255, 42, 42, 0.5);
+}
+
+form {
+  display: grid;
+  gap: 10px;
+}
+
+label {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--bb-muted);
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 42, 42, 0.22);
+  background: rgba(5, 5, 6, 0.72);
+  color: var(--bb-text);
+  outline: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+input::placeholder {
+  color: rgba(167, 167, 179, 0.65);
+}
+
+input:focus {
+  border-color: var(--bb-red);
+  box-shadow: 0 0 0 4px rgba(255, 42, 42, 0.14);
+}
+
+button[type="submit"] {
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 42, 42, 0.55);
+  background: linear-gradient(180deg, rgba(255, 42, 42, 0.95), rgba(177, 15, 26, 0.98));
+  color: #0b0b0e;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 14px 38px rgba(255, 42, 42, 0.15);
+  transition: transform 140ms ease, filter 140ms ease, box-shadow 140ms ease;
+}
+
+button[type="submit"]:hover {
+  filter: brightness(1.05) saturate(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 18px 45px rgba(255, 42, 42, 0.18);
+}
+
+button[type="submit"]:active {
+  transform: translateY(0px);
+}
+
+button[type="submit"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 42, 42, 0.18), 0 18px 45px rgba(255, 42, 42, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
