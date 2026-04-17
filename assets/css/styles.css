@@ -2,7 +2,7 @@
 :root {
   color-scheme: dark;
 
-  --bb-bg-0: #050506;
+  --bb-bg-0: #000000;
   --bb-bg-1: #0b0b0e;
   --bb-surface: rgba(14, 14, 18, 0.78);
   --bb-surface-2: rgba(20, 20, 26, 0.92);
@@ -71,21 +71,37 @@ body::before {
   mix-blend-mode: overlay;
 }
 
+.big-title, .login-container{
+  background: rgba(0, 0, 0, 0.576);
+  backdrop-filter: blur(20px);
+  padding: 10px;
+  border-radius: 16px;;
+}
+
+.big-title h1, h2 {
+  margin: 0;
+  font-size: 100px;
+  width: 100%;
+  text-align: center;
+}
+
+.big-title h2 {
+  font-size: 30px;
+  color: gray;
+}
+
 .login-body {
-  width: min(520px, 100%);
+  width:  100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 60px;
+  gap: 20px;
 }
 
 .login-container {
   width: min(440px, 100%);
   padding: 26px 22px;
-  border-radius: var(--bb-radius);
-  background: linear-gradient(180deg, var(--bb-surface), var(--bb-surface-2));
-  border: 1px solid var(--bb-border-2);
   box-shadow: var(--bb-shadow);
   position: relative;
   isolation: isolate;
@@ -100,7 +116,7 @@ body::before {
 }
 
 .login-container h2::before {
-  content: "\25BC ";
+  content: "\25BC  ";
   color: var(--bb-red);
   text-shadow: 0 0 18px rgba(255, 42, 42, 0.5);
 }
@@ -116,13 +132,12 @@ label {
   color: var(--bb-muted);
 }
 
-input[type="text"],
-input[type="password"] {
+input[type="text"], input[type="password"] {
   width: 100%;
   padding: 12px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 42, 42, 0.22);
-  background: rgba(5, 5, 6, 0.72);
+  border: 2px solid rgba(255, 42, 42, 0.22);
+  background: rgba(27, 27, 27, 0.72);
   color: var(--bb-text);
   outline: none;
   transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
@@ -280,15 +295,6 @@ button[type="submit"]:focus-visible {
 .bb-login-hero .bb-icon-eye {
   --bb-eye-max: min(200px, 50vw);
   --bb-eye-width: var(--bb-eye-max);
-}
-
-.bb-login-hero h2 {
-  margin: 0;
-  text-align: center;
-}
-
-.bb-login-hero h2::before {
-  content: "";
 }
 
 .bb-sr-only {
