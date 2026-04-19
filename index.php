@@ -1,37 +1,50 @@
 <?php
 require 'db.php';
 
+session_start();
+
 $statusMessage = "";
+$statusKind = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = htmlspecialchars($_POST["username"] ?? "");
-    $password = htmlspecialchars($_POST["password"] ?? "");
+    $username = trim((string)($_POST["username"] ?? ""));
+    $password = (string)($_POST["password"] ?? "");
 
-    $stmt = $conn->prepare("SELECT id, password_hash, role FROM users where username = ?");
+    $stmt = $conn->prepare("SELECT user_id, password_hash, role FROM users WHERE username = ?");
 
-    $stmt->bind_param("sssss", $firstName, $lastName, $username, $password_hash, $role);
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows === 1) {
-        $stmt->bind_result($id, $hashed_password, $user_role);
+        $stmt->bind_result($userId, $hashedPassword, $userRole);
         $stmt->fetch();
-        if (password_verify($password, $hashed_password)) {
-            $_SESSION["user_id"] = $id;
-            if ($user_role === "teacher"){
-                header("Location: teacher/dashboard.php");
+        if (password_verify($password, $hashedPassword)) {
+            $_SESSION["user_id"] = $userId;
+            $_SESSION["role"] = $userRole;
+
+            $basePath = rtrim(dirname($_SERVER["SCRIPT_NAME"] ?? ""), "/\\");
+            if ($userRole === "teacher") {
+                header("Location: {$basePath}/teacher/dashboard.php");
             } else {
-                header("Location: student/dashboard.php");
+                header("Location: {$basePath}/student/dashboard.php");
             }
             exit;
         }
     }
+
     $statusMessage = "Invalid credentials";
+    $statusKind = "error";
 }
 
 $basePath = rtrim(dirname($_SERVER["SCRIPT_NAME"] ?? ""), "/\\");
 $registerHref = $basePath . "/register.php";
+
+$statusClass = "bb-status";
+if ($statusKind === "error") {
+    $statusClass .= " bb-status--error";
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -55,7 +68,7 @@ $registerHref = $basePath . "/register.php";
         <div class="login-container">
             <h2>Login</h2>
             <p id="statusMessage" class="<?php echo $statusClass; ?>" aria-live="polite"><?php echo $statusMessage; ?></p>
-            <form action="/login" method="POST">
+            <form action="" method="POST">
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
 
@@ -65,7 +78,7 @@ $registerHref = $basePath . "/register.php";
                 <button type="submit">Login</button>
                 
             </form>
-            <a class="bb-auth-link" href=" bb-status--error">Register Account</a>
+            <a class="bb-auth-link" href="<?php echo $registerHref; ?>">Register Account</a>
         </div>
     </div>
     <script src="assets/js/eye-follow.js" defer></script>

@@ -50,6 +50,8 @@ body {
   display: grid;
   place-items: center;
   padding: 24px;
+  /*opacity: 0;
+  animation: pageIn 90ms ease-out forwards;*/
 }
 
 /* subtle “surveillance scanline” texture */
@@ -309,8 +311,15 @@ button[type="submit"]:focus-visible {
   border: 0;
 }
 
+@keyframes pageIn { to { opacity: 1; } }
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+  }
+
+  body { 
+    opacity: 1; 
+    animation: none;
   }
 }

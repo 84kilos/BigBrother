@@ -79,7 +79,7 @@ $loginHref = $basePath . "/index.php";
     <div class="login-body">
         <div class="big-title">
             <h1>BIG BROTHER</h1>
-            <h2>Leave no student unchecked.</h2>
+            <h2>Attendance tool for teachers and students</h2>
         </div>
         <div class="bb-login-hero">
             <span class="bb-icon-eye bb-icon-eye--fluid" data-follow-mouse data-follow-enabled="false" role="img" aria-label="Camera lens"></span>

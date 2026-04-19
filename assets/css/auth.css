@@ -47,7 +47,8 @@
 }
 
 #statusMessage{
-  margin-top: 30px;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 #statusMessage:empty {
@@ -66,7 +67,8 @@
 }
 
 .bb-status--error {
-  border-color: rgba(255, 42, 42, 0.55);
+  color: rgb(255, 42, 42);
+  border-color: rgba(255, 42, 42, 0.409);
   box-shadow: 0 0 0 4px rgba(255, 42, 42, 0.09);
 }
 
