@@ -1,0 +1,117 @@
+.class-previews {
+  width: min(900px, 100%);
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--bb-border-2);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(18px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Make the whole preview act like a link (works whether it's a div or an <a>) */
+.class-preview {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  width: 100%;
+  padding: 10px 10px;
+  border: 1px solid rgba(28, 28, 28, 0.22);
+  border-radius: 12px;
+  background: rgba(9, 9, 9, 0.6);
+  color: var(--bb-text);
+  text-decoration: none;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.class-preview:active {
+    transform: translateY(0px);
+}
+
+.class-preview:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 42, 42, 0.14);
+}
+
+.class-preview-name,
+.class-preview-count,
+.class-preview-goto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(20, 20, 26, 0.65);
+    min-height: 44px;
+    transition: transform 140ms ease, background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.class-preview-count:hover {
+    border-color: rgba(255, 42, 42, 0.45);
+    background: rgba(255, 42, 42, 0.06);
+    transform: translateY(-1px);
+    box-shadow: 0 14px 38px rgba(255, 42, 42, 0.12);
+}
+
+.class-preview-goto:hover {
+    border-color: rgba(255, 42, 42, 0.45);
+    background: rgba(255, 42, 42, 0.06);
+    transform: translateY(-1px);
+    box-shadow: 0 14px 38px rgba(255, 42, 42, 0.12);
+}
+
+.class-preview-name {
+    justify-content: flex-start;
+    background: rgba(9, 9, 9, 0.386);
+    text-align: left;
+}
+
+.class-preview-name p,
+.class-preview-count p,
+.class-preview-goto p {
+  margin: 0;
+}
+
+.class-preview-count {
+  color: var(--bb-muted);
+  white-space: nowrap;
+}
+
+.class-preview-goto {
+  width: 44px;
+  padding: 10px 0;
+  font-size: 18px;
+  color: var(--bb-text);
+}
+
+@media (max-width: 520px) {
+  .class-previews {
+    padding: 12px;
+  }
+
+  .class-preview {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "name goto"
+      "count goto";
+    align-items: stretch;
+  }
+
+  .class-preview-name {
+    grid-area: name;
+  }
+
+  .class-preview-count {
+    grid-area: count;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .class-preview-goto {
+    grid-area: goto;
+  }
+}
