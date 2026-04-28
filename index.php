@@ -1,8 +1,56 @@
 <?php
+require 'db.php';
+
 session_start();
-$error = $_SESSION['login_error'] ?? '';
-unset($_SESSION['login_error']);
+
+$statusMessage = "";
+$statusKind = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $email = trim((string)($_POST["email"] ?? ""));
+    $password = (string)($_POST["password"] ?? "");
+
+    $stmt = $conn->prepare("SELECT id, full_name, email, password_hash, role FROM users WHERE email = ?");
+
+    if ($stmt) {
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows === 1) {
+            $stmt->bind_result($userId, $fullName, $userEmail, $hashedPassword, $userRole);
+            $stmt->fetch();
+            if (password_verify($password, $hashedPassword)) {
+                $_SESSION["id"] = $userId;
+                $_SESSION["full_name"] = $fullName;
+                $_SESSION["email"] = $userEmail;
+                $_SESSION["role"] = $userRole;
+
+                $basePath = rtrim(dirname($_SERVER["SCRIPT_NAME"] ?? ""), "/\\");
+                if ($userRole === "teacher") {
+                    header("Location: {$basePath}/teacher/dashboard.php");
+                } else {
+                    header("Location: {$basePath}/student/dashboard.php");
+                }
+                exit;
+            }
+        }
+    }
+
+    $statusMessage = "Invalid credentials";
+    $statusKind = "error";
+}
+
+$basePath = rtrim(dirname($_SERVER["SCRIPT_NAME"] ?? ""), "/\\");
+$registerHref = $basePath . "/register.php";
+
+$statusClass = "bb-status";
+if ($statusKind === "error") {
+    $statusClass .= " bb-status--error";
+}
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,8 +89,10 @@ unset($_SESSION['login_error']);
         <h2>Welcome back</h2>
         <p class="soft-text">Use your email and password to sign in.</p>
 
-        <?php if ($error): ?>
-          <div class="notice-box"><?php echo htmlspecialchars($error); ?></div>
+        <?php if ($statusMessage !== ""): ?>
+          <div class="<?php echo htmlspecialchars($statusClass, ENT_QUOTES, 'UTF-8'); ?>">
+        <?php echo htmlspecialchars($statusMessage, ENT_QUOTES, 'UTF-8'); ?>
+          </div>
         <?php endif; ?>
 
         <form class="form-grid" action="index.php" method="POST">
@@ -58,12 +108,12 @@ unset($_SESSION['login_error']);
 
           <div class="btn-row">
             <button class="btn btn-primary" type="submit" name="login">Login</button>
-            <a class="btn btn-secondary" href="register.php">Create Account</a>
+            <a class="btn btn-secondary" href="<?php echo htmlspecialchars($registerHref, ENT_QUOTES, 'UTF-8'); ?>">Create Account</a>
           </div>
         </form>
 
         <div class="helper-links">
-          <a href="register.php">Need an account?</a>
+          <a href="<?php echo htmlspecialchars($registerHref, ENT_QUOTES, 'UTF-8'); ?>">Need an account?</a>
         </div>
       </section>
     </div>
