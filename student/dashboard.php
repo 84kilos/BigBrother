@@ -1,5 +1,7 @@
 <?php
 session_start();
+$studentName = $_SESSION['full_name'] ?? 'Student';
+$studentEmail = $_SESSION['email'] ?? 'student@example.com';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +42,8 @@ session_start();
 
         <div class="topbar-user">
           <div>
-            <p><?php echo $_SESSION['name'] ?? 'Student'; ?></p>
+            <p><?php echo htmlspecialchars($studentName, ENT_QUOTES, 'UTF-8'); ?></p>
+            <p class="muted"><?php echo htmlspecialchars($studentEmail, ENT_QUOTES, 'UTF-8'); ?></p>
           </div>
           <div class="avatar">S</div>
         </div>
@@ -72,6 +75,27 @@ session_start();
                 <th>Date</th>
                 <th>Subject</th>
                 <th>Status</th>
+              </tr>
+            </thead>
+
+            <tbody id="attendanceTable">
+              <!-- Backend data goes here -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Enrollment Table -->
+        <div class="table-wrap" id="enrollmentSection">
+          <div class="card-header">
+            <h3>Enrollment</h3>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Professor</th>
+                <th>Subject Name</th>
+                <th>Code</th>
               </tr>
             </thead>
 
