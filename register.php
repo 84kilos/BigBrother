@@ -1,8 +1,67 @@
 <?php
-session_start();
-$success = $_SESSION['register_success'] ?? '';
-$error = $_SESSION['register_error'] ?? '';
-unset($_SESSION['register_success'], $_SESSION['register_error']);
+require 'db.php';
+
+$statusMessage = "";
+$statusKind = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $full_name = trim((string)($_POST["full_name"] ?? ""));
+    if ($full_name === "") {
+        $statusMessage = "Full name cannot be blank.";
+        $statusKind = "error";
+    }
+
+    $email = trim((string)($_POST["email"] ?? ""));
+    if ($statusMessage === "" && $email === "") {
+        $statusMessage = "Email cannot be blank.";
+        $statusKind = "error";
+    }
+    $password = (string)($_POST["password"] ?? "");
+    $confirm_password = (string)($_POST["confirm_password"] ?? "");
+    if ($statusMessage === "" && strlen($password) < 8) {
+        $statusMessage = "Password must be at least 8 characters.";
+        $statusKind = "error";
+    }
+    if ($statusMessage === "" && $password !== $confirm_password) {
+        $statusMessage = "Passwords do not match.";
+        $statusKind = "error";
+    }
+    $role = strtolower(trim((string)($_POST["role"] ?? "")));
+
+    if ($statusMessage === "" && !in_array($role, ["teacher", "student"], true)) {
+        $statusMessage = "Invalid role selected.";
+        $statusKind = "error";
+    }
+
+    if ($statusMessage === "") {
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+        $stmt = $conn->prepare("INSERT INTO users (full_name, email, password_hash, role) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $full_name, $email, $passwordHash, $role);
+
+        $ok = $stmt->execute();
+        if ($ok) {
+            $statusMessage = "Registered successfully!";
+            $statusKind = "success";
+        } elseif ($stmt->errno === 1062) {
+            $statusMessage = "Email already registered.";
+            $statusKind = "error";
+        } else {
+            $statusMessage = "Registration failed.";
+            $statusKind = "error";
+        }
+    }
+}
+
+$statusClass = "bb-status";
+if ($statusKind === "success") {
+    $statusClass .= " bb-status--success";
+} elseif ($statusKind === "error") {
+    $statusClass .= " bb-status--error";
+}
+
+$basePath = rtrim(dirname($_SERVER["SCRIPT_NAME"] ?? ""), "/\\");
+$loginHref = $basePath . "/index.php";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,12 +95,10 @@ unset($_SESSION['register_success'], $_SESSION['register_error']);
         <h2>Create account</h2>
         <p class="soft-text">Fill out the form below to get started.</p>
 
-        <?php if ($success): ?>
-          <div class="notice-box"><?php echo htmlspecialchars($success); ?></div>
-        <?php endif; ?>
-
-        <?php if ($error): ?>
-          <div class="notice-box"><?php echo htmlspecialchars($error); ?></div>
+        <?php if ($statusMessage !== ""): ?>
+          <div class="<?php echo htmlspecialchars($statusClass, ENT_QUOTES, 'UTF-8'); ?>">
+            <?php echo htmlspecialchars($statusMessage, ENT_QUOTES, 'UTF-8'); ?>
+          </div>
         <?php endif; ?>
 
         <form class="form-grid" action="register.php" method="POST">
@@ -79,7 +136,7 @@ unset($_SESSION['register_success'], $_SESSION['register_error']);
 
           <div class="btn-row">
             <button class="btn btn-primary" type="submit" name="register">Register</button>
-            <a class="btn btn-secondary" href="index.php">Back to Login</a>
+            <a class="btn btn-secondary" href="<?php echo htmlspecialchars($loginHref, ENT_QUOTES, 'UTF-8'); ?>">Back to Login</a>
           </div>
         </form>
       </section>
