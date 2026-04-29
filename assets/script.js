@@ -113,32 +113,44 @@ function sendMessage(event, role) {
 
   const form = event.target;
   const status = form.querySelector('.form-status');
+  const config = window.EMAILJS_CONFIG;
+  const templateId = role === 'teacher' ? config?.teacherTemplateID : config?.studentTemplateID;
+  const setStatus = (message, kind) => {
+    if (!status) return;
+    status.textContent = message;
+    status.classList.add('is-visible');
+    status.classList.remove('is-success', 'is-error');
+    if (kind === 'success') status.classList.add('is-success');
+    if (kind === 'error') status.classList.add('is-error');
+  };
 
-  if (status) {
-    status.textContent = 'Demo mode: your EmailJS-ready form is connected in the UI. Add your teammate\'s EmailJS keys to make live sending work.';
+  if (!window.emailjs || !config || !templateId) {
+    setStatus('Email sending is not configured yet.', 'error');
+    return;
   }
 
-  if (window.emailjs && window.EMAILJS_CONFIG) {
-    emailjs.send(
-      window.EMAILJS_CONFIG.serviceID,
-      window.EMAILJS_CONFIG.templateID,
-      {
-        from_name: form.querySelector('[name="from_name"]').value,
-        reply_to: form.querySelector('[name="reply_to"]').value,
-        target_name: form.querySelector('[name="target_name"]').value,
-        role: role,
-        message: form.querySelector('[name="message"]').value
-      },
-      window.EMAILJS_CONFIG.publicKey
-    )
-    .then(() => {
-      if (status) status.textContent = 'Message sent successfully.';
-      form.reset();
-    })
-    .catch(() => {
-      if (status) status.textContent = 'EmailJS is loaded, but the config snippet still needs to be checked.';
-    });
-  }
+  setStatus('Sending message...', null);
+
+  emailjs.send(
+    config.serviceID,
+    templateId,
+    {
+      from_name: form.querySelector('[name="from_name"]')?.value ?? '',
+      reply_to: form.querySelector('[name="reply_to"]')?.value ?? '',
+      target_name: form.querySelector('[name="target_name"]')?.value ?? '',
+      target_email: form.querySelector('[name="target_email"]')?.value ?? '',
+      role: role,
+      message: form.querySelector('[name="message"]')?.value ?? ''
+    },
+    config.publicKey
+  )
+  .then(() => {
+    setStatus('Email sent successfully.', 'success');
+    form.reset();
+  })
+  .catch(() => {
+    setStatus('Unable to send the message right now.', 'error');
+  });
 }
 
 window.markAttendance = markAttendance;

@@ -429,7 +429,7 @@ if ($subjectMessageKind === 'success') {
     </div>
   </div>
 
-  <script src="../assets/email-config.js"></script>
+  <script src="../assets/email-config.js?v=2"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script src="../assets/eye-follow.js" defer></script>
   <script>
@@ -437,7 +437,7 @@ if ($subjectMessageKind === 'success') {
       emailjs.init(window.EMAILJS_CONFIG.publicKey);
     }
   </script>
-  <script src="../assets/script.js"></script>
+  <script src="../assets/script.js?v=2"></script>
   <script>
     document.querySelectorAll('tr.is-clickable[data-href]').forEach((row) => {
       const href = row.getAttribute('data-href');

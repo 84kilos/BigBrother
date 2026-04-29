@@ -343,28 +343,44 @@ if ($enrollmentMessageKind === 'success') {
         <!-- Contact -->
         <div class="contact-card" id="contactSection">
           <div class="card-header">
-            <h3>Contact</h3>
+            <h3>Student to Teacher Contact</h3>
           </div>
 
-          <form id="contactForm">
-            <div class="form-group">
-              <label>Name</label>
-              <input class="text-input" type="text" placeholder="Your name" required>
+          <form class="form-grid" onsubmit="sendMessage(event, 'student')">
+            <div class="form-row two">
+              <div class="form-group">
+                <label for="student_name">Your Name</label>
+                <input class="text-input" type="text" id="student_name" name="from_name" value="<?php echo htmlspecialchars($studentName, ENT_QUOTES, 'UTF-8'); ?>" required>
+              </div>
+
+              <div class="form-group">
+                <label for="student_email">Your Email</label>
+                <input class="text-input" type="email" id="student_email" name="reply_to" value="<?php echo htmlspecialchars($studentEmail, ENT_QUOTES, 'UTF-8'); ?>" required>
+              </div>
+            </div>
+
+            <div class="form-row two">
+              <div class="form-group">
+                <label for="teacher_target_name">Teacher Name</label>
+                <input class="text-input" type="text" id="teacher_target_name" name="target_name" placeholder="Teacher name" required>
+              </div>
+
+              <div class="form-group">
+                <label for="teacher_target_email">Teacher Email</label>
+                <input class="text-input" type="email" id="teacher_target_email" name="target_email" placeholder="teacher@example.com" required>
+              </div>
             </div>
 
             <div class="form-group">
-              <label>Email</label>
-              <input class="text-input" type="email" placeholder="Your email" required>
-            </div>
-
-            <div class="form-group">
-              <label>Message</label>
-              <textarea class="text-area" placeholder="Write your message" required></textarea>
+              <label for="student_message">Message</label>
+              <textarea class="text-area" id="student_message" name="message" placeholder="Write your message here..." required></textarea>
             </div>
 
             <div class="btn-row">
               <button class="btn btn-primary" type="submit">Send Message</button>
             </div>
+
+            <p class="form-status muted"></p>
           </form>
         </div>
 
@@ -376,7 +392,14 @@ if ($enrollmentMessageKind === 'success') {
 
 </div>
 
-<script src="../assets/script.js"></script>
+<script src="../assets/email-config.js?v=2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="../assets/script.js?v=2"></script>
 <script src="../assets/eye-follow.js" defer></script>
+<script>
+  if (window.emailjs && window.EMAILJS_CONFIG) {
+    emailjs.init(window.EMAILJS_CONFIG.publicKey);
+  }
+</script>
 </body>
 </html>

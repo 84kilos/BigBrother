@@ -644,6 +644,32 @@ tbody td {
   color: var(--text-soft);
 }
 
+.form-status {
+  display: none;
+  margin-top: 8px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  color: var(--text-soft);
+}
+
+.form-status.is-visible {
+  display: block;
+}
+
+.form-status.is-success {
+  color: #d3ffea;
+  background: rgba(47, 209, 123, 0.15);
+  border-color: rgba(47, 209, 123, 0.25);
+}
+
+.form-status.is-error {
+  color: #ffd3da;
+  background: rgba(255, 95, 122, 0.13);
+  border-color: rgba(255, 95, 122, 0.22);
+}
+
 .session-builder-notice {
   margin-top: 0;
   margin-bottom: 18px;
