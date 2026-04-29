@@ -71,7 +71,7 @@ if ($statusKind === "error") {
         </div>
 
         <div class="hero-copy">
-          <h1>Track attendance with a clean, modern dashboard.</h1>
+          <h1>Attendance tracking tool for both teachers and students.</h1>
           <p>
           Teachers can mark attendance quickly, and students can track their progress in real time.
           </p>

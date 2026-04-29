@@ -46,7 +46,7 @@ textarea {
 }
 
 .page-shell {
-  width: min(1200px, calc(100% - 32px));
+  width: min(1500px, calc(100% - 32px));
   margin: 0 auto;
   padding: 28px 0 40px;
 }
@@ -170,11 +170,18 @@ textarea {
 }
 
 .form-group {
-  display: grid;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;          /* space between label and input */
+  margin-bottom: 20px; /* space between form groups */
+}
+
+.btn-row {
+  margin-top: 20px; /* space above button */
 }
 
 .form-group label {
+  margin-top: 4px;
   font-size: 0.95rem;
   color: var(--text-soft);
 }
@@ -355,6 +362,9 @@ textarea {
 
 .stat-card {
   grid-column: span 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .content-card.large {
@@ -413,6 +423,31 @@ table {
   border-collapse: collapse;
 }
 
+.subjects-table .subjects-col-professor {
+  width: 20%;
+}
+
+.subjects-table .subjects-col-name {
+  width: 20%;
+}
+
+.subjects-table .subjects-col-code {
+  width: 10%;
+}
+
+.subjects-table .subjects-col-description {
+  width: 50%;
+}
+
+.subjects-table .subjects-col-action {
+  width: 1%;
+}
+
+.subjects-table td:last-child,
+.subjects-table th:last-child {
+  white-space: nowrap;
+}
+
 thead th {
   font-size: 0.92rem;
   color: var(--text-soft);
@@ -425,6 +460,17 @@ tbody td {
   padding: 16px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
+
+.is-clickable {
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+.is-clickable:hover,
+.is-clickable:focus {
+  background: rgba(255, 255, 255, 0.06);
+}
+
 
 .status-pill {
   display: inline-flex;
@@ -460,6 +506,34 @@ tbody td {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-soft);
+}
+
+.session-builder-notice {
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+.attendance-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.attendance-count {
+  min-width: 20px;
+  display: inline-block;
+}
+
+.attendance-toggle {
+  min-width: 42px;
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
+.session-confirm-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
 }
 
 .contact-grid {
