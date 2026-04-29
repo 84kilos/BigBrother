@@ -247,7 +247,9 @@ if ($studentsStmt) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo htmlspecialchars((string)$subject['code'], ENT_QUOTES, 'UTF-8'); ?> | Class Roster</title>
+  <script src="../assets/theme.js"></script>
   <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/eye.css">
 </head>
 <body>
   <div class="page-shell">
@@ -256,6 +258,9 @@ if ($studentsStmt) {
         <div class="brand-badge">
           <span class="logo-dot"></span>
           Teacher Panel
+        </div>
+        <div class="bb-login-hero">
+          <span class="bb-icon-eye bb-icon-eye--fluid" data-follow-mouse data-follow-enabled="false" role="img" aria-label="Camera lens"></span>
         </div>
         <h2>BigBrother</h2>
         <p class="dashboard-subtitle">Class details.</p>
@@ -363,6 +368,7 @@ if ($studentsStmt) {
     </div>
   </div>
 
+  <script src="../assets/eye-follow.js" defer></script>
   <script>
     (() => {
       const toggleButton = document.getElementById('newSessionToggle');

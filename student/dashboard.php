@@ -168,7 +168,9 @@ if ($enrollmentMessageKind === 'success') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BigBrother | Student Dashboard</title>
+  <script src="../assets/theme.js"></script>
   <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/eye.css">
 </head>
 <body>
 
@@ -178,6 +180,9 @@ if ($enrollmentMessageKind === 'success') {
 
     <!-- Sidebar -->
     <aside class="sidebar glass-card">
+      <div class="bb-login-hero">
+        <span class="bb-icon-eye bb-icon-eye--fluid" data-follow-mouse data-follow-enabled="false" role="img" aria-label="Camera lens"></span>
+      </div>
       <h2>BigBrother</h2>
       <p class="dashboard-subtitle">Student Panel</p>
 
@@ -186,6 +191,22 @@ if ($enrollmentMessageKind === 'success') {
         <a href="#attendanceSection">Attendance</a>
         <a href="#enrollmentSection">Subjects</a>
         <a href="#contactSection">Contact</a>
+      </div>
+
+      <div class="theme-toggle">
+        <div class="theme-toggle__card">
+          <div class="theme-toggle__copy">
+            <span class="theme-toggle__label">Theme</span>
+            <span class="theme-toggle__hint">Blue / Dystopia</span>
+          </div>
+          <label class="theme-toggle__switch" for="themeToggle">
+            <input type="checkbox" id="themeToggle" aria-label="Toggle dystopian theme">
+            <span class="theme-toggle__slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="nav-links">
         <a href="../logout.php">Logout</a>
       </div>
     </aside>
@@ -356,5 +377,6 @@ if ($enrollmentMessageKind === 'success') {
 </div>
 
 <script src="../assets/script.js"></script>
+<script src="../assets/eye-follow.js" defer></script>
 </body>
 </html>

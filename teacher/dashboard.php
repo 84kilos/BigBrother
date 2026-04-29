@@ -190,7 +190,9 @@ if ($subjectMessageKind === 'success') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Teacher Dashboard | BigBrother</title>
+  <script src="../assets/theme.js"></script>
   <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="../assets/eye.css">
 </head>
 <body>
   <div class="page-shell">
@@ -200,6 +202,9 @@ if ($subjectMessageKind === 'success') {
           <span class="logo-dot"></span>
           Teacher Panel
         </div>
+        <div class="bb-login-hero">
+          <span class="bb-icon-eye bb-icon-eye--fluid" data-follow-mouse data-follow-enabled="false" role="img" aria-label="Camera lens"></span>
+        </div>
         <h2>BigBrother</h2>
         <p class="dashboard-subtitle">Attendance management made simple.</p>
         <nav class="nav-links">
@@ -207,6 +212,22 @@ if ($subjectMessageKind === 'success') {
           <a href="#subjectsSection">Classes</a>
           <a href="#attendanceSection">Attendance</a>
           <a href="#contactSection">Contact</a>
+        </nav>
+
+        <div class="theme-toggle">
+          <div class="theme-toggle__card">
+            <div class="theme-toggle__copy">
+              <span class="theme-toggle__label">Theme</span>
+              <span class="theme-toggle__hint">Blue / Dystopia</span>
+            </div>
+            <label class="theme-toggle__switch" for="themeToggle">
+              <input type="checkbox" id="themeToggle" aria-label="Toggle dystopian theme">
+              <span class="theme-toggle__slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <nav class="nav-links">
           <a href="../logout.php">Logout</a>
         </nav>
       </aside>
@@ -410,6 +431,7 @@ if ($subjectMessageKind === 'success') {
 
   <script src="../assets/email-config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="../assets/eye-follow.js" defer></script>
   <script>
     if (window.emailjs && window.EMAILJS_CONFIG) {
       emailjs.init(window.EMAILJS_CONFIG.publicKey);

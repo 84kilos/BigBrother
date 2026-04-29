@@ -69,7 +69,9 @@ $loginHref = $basePath . "/index.php";
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BigBrother | Register</title>
+  <script src="assets/theme.js"></script>
   <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/eye.css">
 </head>
 <body>
   <div class="auth-wrapper">
@@ -81,7 +83,9 @@ $loginHref = $basePath . "/index.php";
           <span class="logo-dot"></span>
           BigBrother
         </div>
-
+        <div class="bb-login-hero">
+            <span class="bb-icon-eye bb-icon-eye--fluid" data-follow-mouse data-follow-enabled="false" role="img" aria-label="Camera lens"></span>
+        </div>
         <div class="hero-copy">
           <h1>Create your account</h1>
           <p>
@@ -143,5 +147,6 @@ $loginHref = $basePath . "/index.php";
 
     </div>
   </div>
+  <script src="assets/eye-follow.js" defer></script>
 </body>
 </html>
