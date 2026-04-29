@@ -1,7 +1,9 @@
 (() => {
+  // for toggleable themes, we store in localStorage
   const THEME_KEY = "bb-theme";
   const DYSTOPIA = "dystopia";
 
+  // apply given theme to doc
   const applyTheme = (theme) => {
     if (theme === DYSTOPIA) {
       document.documentElement.dataset.theme = DYSTOPIA;
@@ -10,6 +12,7 @@
     }
   };
 
+  // safely get saved theme
   const getSavedTheme = () => {
     try {
       return localStorage.getItem(THEME_KEY);
@@ -22,12 +25,14 @@
     try {
       localStorage.setItem(THEME_KEY, theme);
     } catch {
-      // Ignore storage failures and still apply in-memory theme changes.
+      // ignore storage failures and still apply in-memory theme changes
     }
   };
 
+  // apply saved theme on initial load
   applyTheme(getSavedTheme());
 
+  // sync toggle state with saved theme
   const syncToggle = () => {
     const themeToggle = document.getElementById("themeToggle");
     if (!themeToggle) return;

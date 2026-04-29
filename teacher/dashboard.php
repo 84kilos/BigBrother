@@ -2,6 +2,7 @@
 session_start();
 require '../db.php';
 
+// get logged in session data
 $teacherId = $_SESSION['id'] ?? null;
 $teacherName = $_SESSION['full_name'] ?? 'Professor Carter';
 $teacherEmail = $_SESSION['email'] ?? 'teacher@example.com';
@@ -15,11 +16,13 @@ if ($teacherId === null || $teacherRole !== 'teacher') {
 $subjectMessage = '';
 $subjectMessageKind = '';
 
+// handle new subject form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'create_subject') {
     $subjectName = trim((string)($_POST['subject_name'] ?? ''));
     $subjectCode = strtoupper(trim((string)($_POST['subject_code'] ?? '')));
     $subjectDescription = trim((string)($_POST['subject_description'] ?? ''));
 
+    // validate inputs yeah yeah
     if ($subjectName === '') {
         $subjectMessage = 'Subject name cannot be blank.';
         $subjectMessageKind = 'error';
@@ -27,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
         $subjectMessage = 'Subject code cannot be blank.';
         $subjectMessageKind = 'error';
     } else {
+        // attempt to insert new subject
         $stmt = $conn->prepare('INSERT INTO subjects (teacher_id, name, code, description) VALUES (?, ?, ?, ?)');
 
         if ($stmt) {
@@ -46,12 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
 
             $stmt->close();
         } else {
+            //probably shouldn't happen but you know, can never be too safe
             $subjectMessage = 'Unable to prepare the class insert.';
             $subjectMessageKind = 'error';
         }
     }
 }
-
+// fetch subjects for this teach
 $subjects = [];
 $subjectsStmt = $conn->prepare('SELECT id, name, code, description, created_at FROM subjects WHERE teacher_id = ? ORDER BY created_at DESC, id DESC');
 if ($subjectsStmt) {
@@ -64,6 +69,7 @@ if ($subjectsStmt) {
     $subjectsStmt->close();
 }
 
+// calculate today's attendance summary for this teacher
 $todayStats = [
     'present_count' => 0,
     'late_count' => 0,
@@ -71,7 +77,6 @@ $todayStats = [
 ];
 
 $studentAttendanceRows = [];
-
 $statsStmt = $conn->prepare(
     "SELECT
         COALESCE(SUM(CASE WHEN attendance.status = 'present' THEN 1 ELSE 0 END), 0) AS present_count,
@@ -88,6 +93,7 @@ $statsStmt = $conn->prepare(
        AND DATE(attendance.marked_at) = CURDATE()"
 );
 
+// do summary count query and fetch results, if any, in one go
 if ($statsStmt) {
     $statsStmt->bind_param('ii', $teacherId, $teacherId);
     $statsStmt->execute();
@@ -105,6 +111,7 @@ if ($statsStmt) {
     $statsStmt->close();
 }
 
+// fetch all students with their latest attendance status for today and overall attendance percentage across this teacher's subjects. crazy query tbh
 $studentAttendanceStmt = $conn->prepare(
     "SELECT
         users.id AS student_id,
@@ -141,6 +148,7 @@ $studentAttendanceStmt = $conn->prepare(
      ORDER BY users.full_name ASC"
 );
 
+// execute the big query and loop through results to calculate attendance percentage and prepare for display
 if ($studentAttendanceStmt) {
     $studentAttendanceStmt->bind_param('ii', $teacherId, $teacherId);
     $studentAttendanceStmt->execute();
@@ -152,10 +160,12 @@ if ($studentAttendanceStmt) {
             $lateCount = (int)($studentAttendance['late_count'] ?? 0);
             $attendancePercent = '0%';
 
+            // if no sessions
             if ($totalSessions > 0) {
                 $attendancePercent = (string)round((($presentCount + $lateCount) / $totalSessions) * 100) . '%';
             }
 
+            // normalize today's status
             $statusToday = (string)($studentAttendance['status_today'] ?? 'NA');
             $statusTodayLower = strtolower($statusToday);
             if (!in_array($statusTodayLower, ['present', 'late', 'absent'], true)) {
@@ -165,6 +175,7 @@ if ($studentAttendanceStmt) {
                 $statusToday = ucfirst($statusTodayLower);
             }
 
+            // prepare row data for display
             $studentAttendanceRows[] = [
                 'full_name' => (string)$studentAttendance['full_name'],
                 'subject_codes' => (string)($studentAttendance['subject_codes'] ?? ''),
@@ -272,6 +283,7 @@ if ($subjectMessageKind === 'success') {
               </div>
             </div>
 
+            <!-- if there's a message about the subject form submission, show it here -->
             <?php if ($subjectMessage !== ''): ?>
               <div class="<?php echo htmlspecialchars($subjectNoticeClass, ENT_QUOTES, 'UTF-8'); ?>">
                 <?php echo htmlspecialchars($subjectMessage, ENT_QUOTES, 'UTF-8'); ?>
@@ -324,6 +336,7 @@ if ($subjectMessageKind === 'success') {
                   </tr>
                 </thead>
                 <tbody>
+                  <!-- if no subjects, show message, else show subjects with clickable rows to go to class page -->
                   <?php foreach ($subjects as $subject): ?>
                     <tr class="is-clickable" tabindex="0" data-href="<?php echo htmlspecialchars('class.php?subject_id=' . (int)$subject['id'], ENT_QUOTES, 'UTF-8'); ?>">
                       <td><?php echo htmlspecialchars($subject['code'], ENT_QUOTES, 'UTF-8'); ?></td>
@@ -354,6 +367,7 @@ if ($subjectMessageKind === 'success') {
                 </tr>
               </thead>
               <tbody>
+                <!-- if no students, show message, else show students with attendance summary and colored status pills for today's status -->
                 <?php if (count($studentAttendanceRows) === 0): ?>
                   <tr>
                     <td colspan="4">No students are enrolled in your classes yet.</td>
@@ -438,6 +452,7 @@ if ($subjectMessageKind === 'success') {
     }
   </script>
   <script src="../assets/script.js?v=2"></script>
+  <!-- add click and keyboard handlers to table rows with .is-clickable to navigate to the URL in their data-href attribute -->
   <script>
     document.querySelectorAll('tr.is-clickable[data-href]').forEach((row) => {
       const href = row.getAttribute('data-href');

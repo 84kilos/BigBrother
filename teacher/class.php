@@ -2,6 +2,7 @@
 session_start();
 require '../db.php';
 
+// ensure teacher is logged in
 $teacherId = $_SESSION['id'] ?? null;
 $teacherRole = $_SESSION['role'] ?? null;
 
@@ -10,12 +11,14 @@ if ($teacherId === null || $teacherRole !== 'teacher') {
     exit;
 }
 
+// get subject id
 $subjectId = (int)($_GET['subject_id'] ?? 0);
 if ($subjectId <= 0) {
     header('Location: dashboard.php');
     exit;
 }
 
+// fetch subject details for teacher
 $subject = null;
 $subjectStmt = $conn->prepare('SELECT id, name, code, description FROM subjects WHERE id = ? AND teacher_id = ?');
 if ($subjectStmt) {
@@ -28,11 +31,13 @@ if ($subjectStmt) {
     $subjectStmt->close();
 }
 
+// lol, for little monkeys trying to mess with urls
 if (!$subject) {
     header('Location: dashboard.php');
     exit;
 }
 
+// handle new session creation via POST
 $isSessionRequest = $_SERVER['REQUEST_METHOD'] === 'POST' && (($_POST['action'] ?? '') === 'create_session');
 if (!$isSessionRequest && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $rawInput = file_get_contents('php://input');
@@ -44,9 +49,11 @@ if (!$isSessionRequest && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// if session creation request, handle and return JSON response, else continue to render page as normla
 if ($isSessionRequest) {
     header('Content-Type: application/json');
 
+    // attempt to decode json body
     $payload = $_POST;
     if (empty($payload)) {
         $rawPayload = file_get_contents('php://input');
@@ -56,6 +63,7 @@ if ($isSessionRequest) {
         }
     }
 
+    // validate attendance array
     $attendanceItems = $payload['attendance'] ?? null;
     if (!is_array($attendanceItems)) {
         http_response_code(422);
@@ -66,6 +74,7 @@ if ($isSessionRequest) {
         exit;
     }
 
+    // fetch enrolled student ids for this subject and teacher to validate against submitted attendance rows
     $enrolledIds = [];
     $enrolledStmt = $conn->prepare(
         'SELECT enrollments.student_id
@@ -74,6 +83,7 @@ if ($isSessionRequest) {
          WHERE enrollments.subject_id = ? AND subjects.teacher_id = ?'
     );
 
+    // if statement no prepare, error out
     if (!$enrolledStmt) {
         http_response_code(500);
         echo json_encode([
@@ -83,6 +93,7 @@ if ($isSessionRequest) {
         exit;
     }
 
+    // execute statement and gather enrolled student ids
     $enrolledStmt->bind_param('ii', $subjectId, $teacherId);
     $enrolledStmt->execute();
     $enrolledResult = $enrolledStmt->get_result();
@@ -93,6 +104,7 @@ if ($isSessionRequest) {
     }
     $enrolledStmt->close();
 
+    // if no enrolled students, err
     if (count($enrolledIds) === 0) {
         http_response_code(422);
         echo json_encode([
@@ -105,6 +117,7 @@ if ($isSessionRequest) {
     $allowedStatuses = ['present', 'late', 'absent'];
     $normalizedAttendance = [];
 
+    // validate each attendance row, ensuring student id is valid and belongs to this class, status is valid, and no duplicate student ids
     foreach ($attendanceItems as $item) {
         if (!is_array($item)) {
             continue;
@@ -158,6 +171,7 @@ if ($isSessionRequest) {
 
     $sessionDate = date('Y-m-d');
 
+    // all validation passed, attempt to create session and attendance records within transaction
     try {
         $conn->begin_transaction();
 
@@ -200,6 +214,7 @@ if ($isSessionRequest) {
             'session_date' => $sessionDate
         ]);
     } catch (Throwable $exception) {
+        // if any error occurs, rollback transaction and return error message
         $conn->rollback();
         http_response_code(500);
         echo json_encode([
@@ -211,6 +226,7 @@ if ($isSessionRequest) {
     exit;
 }
 
+// fetch students enrolled in this subject along with their attendance summary
 $students = [];
 $studentsStmt = $conn->prepare(
     "SELECT
@@ -230,6 +246,7 @@ $studentsStmt = $conn->prepare(
      ORDER BY users.full_name ASC"
 );
 
+// if statement no prepare, err
 if ($studentsStmt) {
     $studentsStmt->bind_param('i', $subjectId);
     $studentsStmt->execute();
@@ -369,8 +386,10 @@ if ($studentsStmt) {
   </div>
 
   <script src="../assets/eye-follow.js" defer></script>
+  <!-- This is for handling session creation and attendance marking -->
   <script>
     (() => {
+      // grab all necessary elements and ensure they exist before adding event listeners
       const toggleButton = document.getElementById('newSessionToggle');
       const confirmButton = document.getElementById('confirmSessionButton');
       const confirmRow = document.getElementById('sessionConfirmRow');
@@ -390,14 +409,17 @@ if ($studentsStmt) {
 
       const statusOrder = ['present', 'late', 'absent'];
 
+      // helper function to count how many students have a status selected in the current session state
       function getSelectedCount() {
         return Object.keys(sessionState.selections).length;
       }
 
+      // helper function to refresh the summary text, notice, and confirm button state based on current session state and selections
       function refreshSummary() {
         const selectedCount = getSelectedCount();
         const remaining = totalStudents - selectedCount;
 
+        // if session not active, show total students and prompt to start session, else show how many marked and how many remaining, and enable confirm button if all marked
         if (!sessionState.active) {
           summaryText.textContent = `${totalStudents} student${totalStudents === 1 ? '' : 's'} enrolled.`;
           notice.innerHTML = 'Click <strong>New Session</strong> to start marking attendance for this class.';
@@ -406,6 +428,7 @@ if ($studentsStmt) {
           return;
         }
 
+        // session is active, show how many students have been marked and how many are remaining, and enable confirm button if all students have a status selected
         summaryText.textContent = `${selectedCount} of ${totalStudents} student${totalStudents === 1 ? '' : 's'} marked.`;
         confirmRow.hidden = false;
         confirmButton.disabled = remaining !== 0;
@@ -417,6 +440,7 @@ if ($studentsStmt) {
         }
       }
 
+      // helper function to update a single row based on the current session state selections, showing the appropriate counts and toggles for each status
       function updateRow(row) {
         const studentId = row.getAttribute('data-student-id');
         const selectedStatus = sessionState.selections[studentId] || null;
@@ -443,16 +467,19 @@ if ($studentsStmt) {
         });
       }
 
+      // helper function to refresh all rows based on current session state selections, then refresh the summary
       function refreshRows() {
         rows.forEach(updateRow);
         refreshSummary();
       }
 
+      // helper function to reset all selections in the current session state and refresh rows
       function resetSelections() {
         sessionState.selections = {};
         refreshRows();
       }
 
+      // event listener for the new session toggle button, which toggles the active state of the session, resets selections if deactivating, and refreshes rows to show/hide toggles and update counts
       toggleButton.addEventListener('click', () => {
         sessionState.active = !sessionState.active;
         toggleButton.textContent = sessionState.active ? 'Cancel Session' : 'New Session';
@@ -492,6 +519,7 @@ if ($studentsStmt) {
         });
       });
 
+      // event listener for the confirm session button, which gathers the attendance data from the current session state, sends it to the server via POST, and update UI
       confirmButton.addEventListener('click', async () => {
         const selectedCount = getSelectedCount();
         if (selectedCount !== totalStudents) {
@@ -511,6 +539,7 @@ if ($studentsStmt) {
           };
         });
 
+        // send attendance data to server and handle response
         try {
           const response = await fetch(`class.php?subject_id=<?php echo (int)$subjectId; ?>`, {
             method: 'POST',
@@ -529,6 +558,7 @@ if ($studentsStmt) {
             throw new Error(data.message || 'Unable to save the session.');
           }
 
+          // session saved! yahoo
           rows.forEach((row) => {
             const studentId = row.getAttribute('data-student-id');
             const selectedStatus = studentId ? sessionState.selections[studentId] : null;

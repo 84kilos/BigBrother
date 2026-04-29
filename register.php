@@ -4,18 +4,22 @@ require 'db.php';
 $statusMessage = "";
 $statusKind = "";
 
+// handle registration form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // validate full name
     $full_name = trim((string)($_POST["full_name"] ?? ""));
     if ($full_name === "") {
         $statusMessage = "Full name cannot be blank.";
         $statusKind = "error";
     }
 
+    // validate email
     $email = trim((string)($_POST["email"] ?? ""));
     if ($statusMessage === "" && $email === "") {
         $statusMessage = "Email cannot be blank.";
         $statusKind = "error";
     }
+    // validate password
     $password = (string)($_POST["password"] ?? "");
     $confirm_password = (string)($_POST["confirm_password"] ?? "");
     if ($statusMessage === "" && strlen($password) < 8) {
@@ -28,11 +32,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $role = strtolower(trim((string)($_POST["role"] ?? "")));
 
+    // just in case
     if ($statusMessage === "" && !in_array($role, ["teacher", "student"], true)) {
         $statusMessage = "Invalid role selected.";
         $statusKind = "error";
     }
 
+    // if all validation passed, attemp to register
     if ($statusMessage === "") {
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
@@ -83,7 +89,7 @@ $loginHref = $basePath . "/index.php";
           <span class="logo-dot"></span>
           BigBrother
         </div>
-        <div class="bb-login-hero">
+        <div class="bb-login-hero"> <!-- Cool eye icon -->
             <span class="bb-icon-eye bb-icon-eye--fluid" data-follow-mouse data-follow-enabled="false" role="img" aria-label="Camera lens"></span>
         </div>
         <div class="hero-copy">

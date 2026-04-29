@@ -6,10 +6,12 @@ session_start();
 $statusMessage = "";
 $statusKind = "";
 
+// Handle login form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim((string)($_POST["email"] ?? ""));
     $password = (string)($_POST["password"] ?? "");
 
+    // Prepare and execute a query to find user by email
     $stmt = $conn->prepare("SELECT id, full_name, email, password_hash, role FROM users WHERE email = ?");
 
     if ($stmt) {
@@ -17,15 +19,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute();
         $stmt->store_result();
 
+        // check if email user exists first
         if ($stmt->num_rows === 1) {
             $stmt->bind_result($userId, $fullName, $userEmail, $hashedPassword, $userRole);
             $stmt->fetch();
+            // verify the password
             if (password_verify($password, $hashedPassword)) {
                 $_SESSION["id"] = $userId;
                 $_SESSION["full_name"] = $fullName;
                 $_SESSION["email"] = $userEmail;
                 $_SESSION["role"] = $userRole;
 
+                // redirect to appropriate dashboard based on role :/
                 $basePath = rtrim(dirname($_SERVER["SCRIPT_NAME"] ?? ""), "/\\");
                 if ($userRole === "teacher") {
                     header("Location: {$basePath}/teacher/dashboard.php");
@@ -41,6 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $statusKind = "error";
 }
 
+// Prepare registration page
 $basePath = rtrim(dirname($_SERVER["SCRIPT_NAME"] ?? ""), "/\\");
 $registerHref = $basePath . "/register.php";
 

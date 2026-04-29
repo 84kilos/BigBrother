@@ -2,6 +2,7 @@
 session_start();
 require '../db.php';
 
+// get logged in session data
 $studentId = $_SESSION['id'] ?? null;
 $studentName = $_SESSION['full_name'] ?? 'Student';
 $studentEmail = $_SESSION['email'] ?? 'student@example.com';
@@ -15,15 +16,19 @@ if ($studentId === null || $studentRole !== 'student') {
 $enrollmentMessage = '';
 $enrollmentMessageKind = '';
 
+// handle enrollment form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'enroll_subject') {
     $subjectId = (int)($_POST['subject_id'] ?? 0);
 
+    // just in case, validate subject id
     if ($subjectId <= 0) {
         $enrollmentMessage = 'Select a valid subject to enroll in.';
         $enrollmentMessageKind = 'error';
     } else {
+        // attempt to enroll the student in the selected subject
         $enrollStmt = $conn->prepare('INSERT INTO enrollments (student_id, subject_id) VALUES (?, ?)');
 
+        // handle potential duplicate enrollment
         if ($enrollStmt) {
             $enrollStmt->bind_param('ii', $studentId, $subjectId);
             try {
@@ -37,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'enrol
                     $enrollmentMessageKind = 'error';
                 }
             } catch (mysqli_sql_exception $exception) {
+                // Check if the error is due to a duplicate entry (already enrolled)
                 if ((int)$exception->getCode() === 1062) {
                     $enrollmentMessage = 'You are already enrolled in that class.';
                     $enrollmentMessageKind = 'error';
@@ -53,6 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'enrol
     }
 }
 
+// fetch available subjects for enrollmetn
 $availableSubjects = [];
 $subjectsStmt = $conn->prepare(
     'SELECT subjects.id, subjects.name, subjects.code, subjects.description, users.full_name AS teacher_name
@@ -66,7 +73,6 @@ $subjectsStmt = $conn->prepare(
      )
      ORDER BY subjects.created_at DESC, subjects.id DESC'
 );
-
 if ($subjectsStmt) {
     $subjectsStmt->bind_param('i', $studentId);
     $subjectsStmt->execute();
@@ -77,6 +83,7 @@ if ($subjectsStmt) {
     $subjectsStmt->close();
 }
 
+// fetch enrolled subjects with attendance summary
 $enrolledSubjects = [];
 $enrolledStmt = $conn->prepare(
     "SELECT
@@ -99,7 +106,6 @@ $enrolledStmt = $conn->prepare(
      GROUP BY subjects.id, subjects.name, subjects.code, users.full_name
      ORDER BY subjects.created_at DESC, subjects.id DESC"
 );
-
 if ($enrolledStmt) {
     $enrolledStmt->bind_param('i', $studentId);
     $enrolledStmt->execute();
@@ -110,6 +116,7 @@ if ($enrolledStmt) {
     $enrolledStmt->close();
 }
 
+// calculate overall attendance summary
 $overallSessions = 0;
 $overallPresent = 0;
 $overallLate = 0;
@@ -128,7 +135,6 @@ $summaryStmt = $conn->prepare(
       AND attendance.student_id = enrollments.student_id
      WHERE enrollments.student_id = ?"
 );
-
 if ($summaryStmt) {
     $summaryStmt->bind_param('i', $studentId);
     $summaryStmt->execute();
@@ -144,6 +150,7 @@ if ($summaryStmt) {
     $summaryStmt->close();
 }
 
+// calculate attendance percentage and fix the cool progress bar based on this
 if ($overallSessions > 0) {
     $attendanceRatio = ($overallPresent + $overallLate) / $overallSessions;
     $attendanceBarWidth = (int)round($attendanceRatio * 100);
@@ -266,6 +273,7 @@ if ($enrollmentMessageKind === 'success') {
             </thead>
 
             <tbody id="attendanceTable">
+              <!-- if no enrolled subjects, show message, else show subjects with attendance summary -->
               <?php if (count($enrolledSubjects) === 0): ?>
                 <tr>
                   <td colspan="7">You are not enrolled in any classes yet.</td>
@@ -315,6 +323,7 @@ if ($enrollmentMessageKind === 'success') {
             </thead>
 
             <tbody id="enrollmentTable">
+              <!-- if no available subjects, show message, else show subjects -->
               <?php if (count($availableSubjects) === 0): ?>
                 <tr>
                   <td colspan="5">No subjects are available for enrollment right now.</td>

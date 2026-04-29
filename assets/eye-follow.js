@@ -2,6 +2,7 @@
   const reduceMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
   if (reduceMotionQuery?.matches) return;
 
+  // get all eyes that should follow mouse
   const getEyes = () =>
     Array.from(document.querySelectorAll('.bb-icon-eye[data-follow-mouse][data-follow-enabled="true"]'));
   let mouseX = 0;
@@ -9,6 +10,7 @@
   let rafId = 0;
   let activatedOnce = false;
 
+  // enable or disblae eye following
   const setEyeEnabled = (enabled) => {
     const eyes = Array.from(document.querySelectorAll(".bb-icon-eye[data-follow-mouse]"));
     for (const eye of eyes) {
@@ -21,6 +23,7 @@
     }
   };
 
+  // update eye positions based on mouse coords
   const update = () => {
     rafId = 0;
     const eyes = getEyes();
@@ -47,11 +50,13 @@
     }
   };
 
+  // next animation frame
   const schedule = () => {
     if (rafId) return;
     rafId = window.requestAnimationFrame(update);
   };
 
+  // track mouse movement
   document.addEventListener(
     "pointermove",
     (event) => {
@@ -65,6 +70,7 @@
   window.addEventListener("resize", schedule, { passive: true });
   window.addEventListener("scroll", schedule, { passive: true });
 
+  // activate on interaction
   const activateEyes = () => {
     if (activatedOnce) return;
     activatedOnce = true;
@@ -72,10 +78,12 @@
     schedule();
   };
 
+  // activate on focus or click
   document.addEventListener("focusin", activateEyes);
   document.addEventListener("pointerdown", activateEyes, { passive: true });
   document.addEventListener("click", activateEyes, { passive: true });
 
+  // start with eyes disabled
   setEyeEnabled(false);
   schedule();
 })();

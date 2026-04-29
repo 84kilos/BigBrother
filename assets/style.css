@@ -75,10 +75,7 @@ a {
   text-decoration: none;
 }
 
-button,
-input,
-select,
-textarea {
+button, input, select, textarea {
   font: inherit;
 }
 
@@ -111,15 +108,7 @@ textarea {
   border-radius: var(--radius-lg);
 }
 
-.hero-card,
-.form-card,
-.navbar,
-.sidebar,
-.content-card,
-.mini-card,
-.table-wrap,
-.contact-card,
-.stat-card {
+.hero-card,.form-card, .navbar, .sidebar, .content-card, .mini-card, .table-wrap, .contact-card, .stat-card {
   background: var(--glass);
   border: 1px solid var(--border);
   backdrop-filter: blur(16px);
@@ -162,10 +151,7 @@ textarea {
   margin-bottom: 16px;
 }
 
-.hero-copy p,
-.soft-text,
-.muted,
-.dashboard-subtitle {
+.hero-copy p, .soft-text, .muted, .dashboard-subtitle {
   color: var(--text-soft);
   line-height: 1.7;
 }
@@ -223,9 +209,7 @@ textarea {
   color: var(--text-soft);
 }
 
-.text-input,
-.select-input,
-.text-area {
+.text-input, .select-input, .text-area {
   width: 100%;
   padding: 14px 15px;
   border-radius: 14px;
@@ -259,9 +243,7 @@ textarea {
   color: var(--text-main);
 }
 
-.text-input:focus,
-.select-input:focus,
-.text-area:focus {
+.text-input:focus, .select-input:focus, .text-area:focus {
   border-color: var(--focus-border);
   box-shadow: 0 0 0 3px var(--focus-ring);
 }
@@ -271,8 +253,7 @@ textarea {
   min-height: 120px;
 }
 
-.btn-row,
-.inline-actions {
+.btn-row, .inline-actions {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -488,10 +469,7 @@ textarea {
   gap: 20px;
 }
 
-.stat-card,
-.content-card,
-.contact-card,
-.table-wrap {
+.stat-card, .content-card, .contact-card, .table-wrap {
   border-radius: 24px;
   padding: 22px;
 }
@@ -511,9 +489,7 @@ textarea {
   grid-column: span 6;
 }
 
-.content-card.full,
-.table-wrap,
-.contact-card {
+.content-card.full, .table-wrap, .contact-card {
   grid-column: 1 / -1;
 }
 
@@ -525,8 +501,7 @@ textarea {
   margin-bottom: 16px;
 }
 
-.card-header h3,
-.section-title {
+.card-header h3, .section-title {
   font-size: 1.2rem;
 }
 
@@ -579,8 +554,7 @@ table {
   width: 1%;
 }
 
-.subjects-table td:last-child,
-.subjects-table th:last-child {
+.subjects-table td:last-child, .subjects-table th:last-child {
   white-space: nowrap;
 }
 
@@ -602,8 +576,7 @@ tbody td {
   transition: background-color 0.1s ease;
 }
 
-.is-clickable:hover,
-.is-clickable:focus {
+.is-clickable:hover, .is-clickable:focus {
   background: var(--surface-hover);
 }
 
