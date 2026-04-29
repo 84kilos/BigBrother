@@ -80,7 +80,7 @@ if ($statusKind === "error") {
         <div class="hero-copy">
           <h1>Attendance tracking tool for both teachers and students.</h1>
           <p>
-          Teachers can mark attendance quickly, and students can track their progress in real time.
+          Make sure no student goes unchecked.
           </p>
 
           <ul class="feature-list">
